@@ -1,13 +1,40 @@
+//m5
+var obniz = new Obniz.M5StickC();
+//obniz
+// var obniz = new Obniz();
 
+
+const GcOps = require('./gc-ops').GcOps;
+
+function send(gc_sentence){
+  let binary_sentence = [];
+  let total_bytes = 0;
+  for (let gc_word of gc_sentence){
+    var bytes = GcOps.toBytes(gc_word);
+		binary_sentence = binary_sentence.concat(Array.from(bytes));
+  }
+  obniz.uart0.send(binary_sentence);
+}
+
+obniz.onconnect = async function () {
+  //m5
+	obniz.uart0.start({tx: 33, rx: 32});
+  //obniz
+  // obniz.uart0.start({gnd:0, tx: 1, rx: 2});
+
+  obniz.display.clear();
+  obniz.display.print("Game");
+  obniz.display.print("Controllerizer");
+}
 /**
  * Global
  */
-var WS_CLIENTS = {};
+// var WS_CLIENTS = {};
 var GC_GAMEPAD = null;
 var EVENT_HISTORY = null;
- 
-var WS_HOST = null;
-var WS_PORT = null;
+
+// var WS_HOST = null;
+// var WS_PORT = null;
 
 var URL_PARAMS = null;
 
@@ -22,8 +49,8 @@ function resetDev(){
     const tEnabledMovescan = document.getElementById("dev_moveless").checked == false;
 
 	GC_GAMEPAD.init(tEnabledGamepad);
-    GC_MOUSE.init(tEnabledMouse, tEnabledMovescan);
-    GC_KEYBOARD.init(tEnabledKeyboard);
+    // GC_MOUSE.init(tEnabledMouse, tEnabledMovescan);
+    // GC_KEYBOARD.init(tEnabledKeyboard);
 }
 
 /**
@@ -45,16 +72,20 @@ function scanDev(){
 
     var tEvents = [];
 	tEvents.push({"dev":"gamepad",  "msg":GC_GAMEPAD.scan()});
-    tEvents.push({"dev":"mouse",    "msg":GC_MOUSE.scan()});
-    tEvents.push({"dev":"keyboard", "msg":GC_KEYBOARD.scan()});
+    // tEvents.push({"dev":"mouse",    "msg":GC_MOUSE.scan()});
+    // tEvents.push({"dev":"keyboard", "msg":GC_KEYBOARD.scan()});
 
     for (let e of tEvents){
         if (e.msg){
             const tMsgStr = JSON.stringify([e.msg]);
             // send message to Node-RED
-            const tClient = WS_CLIENTS[e.dev];
-            if (tClient && (tClient.readyState==1))
-                tClient.send(tMsgStr);
+            // const tClient = WS_CLIENTS[e.dev];
+            // if (tClient && (tClient.readyState==1))
+            //     tClient.send(tMsgStr);
+
+            // do for obniz
+            send(tMsgStr);
+
             // display log
             var tLog = `${++EVENT_HISTORY.count} (${e.dev}) : ${tMsgStr}\n`;
             EVENT_HISTORY.log.push(tLog);
@@ -81,29 +112,29 @@ function scanDev(){
 function getIntQueryParam(aQuery, aDefault){
     const tValue = parseInt(URL_PARAMS.get(aQuery));
     if (tValue)
-        return tValue;    
+        return tValue;
     else
-        return aDefault;        
+        return aDefault;
 }
 function getStrQueryParam(aQuery, aDefault){
     const tValue = URL_PARAMS.get(aQuery);
     if (tValue)
-        return tValue;    
+        return tValue;
     else
-        return aDefault;        
+        return aDefault;
 }
 
-function createWsClient(aUrl, aDev){
-    var tClients = null;
-    tClient = new WebSocket(`${aUrl}/${aDev}`);
-    tClient.onopen = function(e){
-        console.info(`[${aDev}] is online`)
-    };
-    tClient.onerror = function(e){
-        console.warn(`[${aDev}] is offline`)
-    };
-    return tClient;
-}
+// function createWsClient(aUrl, aDev){
+//     var tClients = null;
+//     tClient = new WebSocket(`${aUrl}/${aDev}`);
+//     tClient.onopen = function(e){
+//         console.info(`[${aDev}] is online`)
+//     };
+//     tClient.onerror = function(e){
+//         console.warn(`[${aDev}] is offline`)
+//     };
+//     return tClient;
+// }
 
 window.onload = function () {
     URL_PARAMS = new URLSearchParams(window.location.search);
@@ -112,12 +143,12 @@ window.onload = function () {
     const tCheckedMouse = getIntQueryParam("enable_mouse", 0);
     const tCheckedKeyboard = getIntQueryParam("enable_keyboard", 0);
     const tCheckedMoveless = getIntQueryParam("enable_moveless", 0);
-    
+
     document.getElementById("dev_gamepad").checked = tCheckedGamepad > 0;
     document.getElementById("dev_mouse").checked = tCheckedMouse > 0;
     document.getElementById("dev_keyboard").checked = tCheckedKeyboard > 0;
     document.getElementById("dev_moveless").checked = tCheckedMoveless > 0;
- 
+
     const tFps = getIntQueryParam("fps", 30);
     console.info("set scan FPS = %d", tFps);
     window.addEventListener("gamepadconnected", onGamepadConnected);
@@ -127,14 +158,14 @@ window.onload = function () {
     resetHistory();
 
     // Create WebSocket clients
-    const tWsHost = getStrQueryParam("wshost", location.hostname);
-    const tWsPort = getIntQueryParam("wsport", 1880);
-    const tWsUrl = `ws://${tWsHost}:${tWsPort}`;
-    console.info("Websocket host url = %s", tWsUrl);
+    // const tWsHost = getStrQueryParam("wshost", location.hostname);
+    // const tWsPort = getIntQueryParam("wsport", 1880);
+    // const tWsUrl = `ws://${tWsHost}:${tWsPort}`;
+    // console.info("Websocket host url = %s", tWsUrl);
 
-    WS_CLIENTS["gamepad"] = createWsClient(tWsUrl, "gamepad");
-    WS_CLIENTS["mouse"] = createWsClient(tWsUrl, "mouse");
-    WS_CLIENTS["keyboard"] = createWsClient(tWsUrl, "keyboard");
+    // WS_CLIENTS["gamepad"] = createWsClient(tWsUrl, "gamepad");
+    // WS_CLIENTS["mouse"] = createWsClient(tWsUrl, "mouse");
+    // WS_CLIENTS["keyboard"] = createWsClient(tWsUrl, "keyboard");
 
     setInterval(scanDev, 1000 / tFps)
 }

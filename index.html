@@ -15,12 +15,16 @@
 
   <title>GcScanner : Input Device Scanner for GameControllerizer</title>
 
+  <script src="https://obniz.io/js/jquery-3.2.1.min.js"></script>
+  <script src="https://unpkg.com/obniz@3.4.0/obniz.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://gamecontrollerizer.github.io/GcOpsObniz/gc-ops_browser.js"  crossorigin="anonymous"></script>
+
   <script src="./js/gc_gamepad_scanner.js"></script>
   <script src="./js/gc_mouse_scanner.js"></script>
   <script src="./js/gc_keyboard_scanner.js"></script>
 
   <script src="./js/main.js"></script>
-  
+
   <!-- Custom styles for this template -->
   <style>
     body {
@@ -65,11 +69,11 @@
     <section>
         <h3>Device inputs</h3>
         <input type="checkbox" id="dev_gamepad" onclick="resetDev(); resetHistory();"
-        ><label class="label-inline" for="dev_gamepad" >Gamepad</label>&nbsp; 
+        ><label class="label-inline" for="dev_gamepad" >Gamepad</label>&nbsp;
         <input type="checkbox" id="dev_mouse" onclick="resetDev(); resetHistory();"
-        ><label class="label-inline" for="dev_mouse" >Mouse</label>&nbsp; 
+        ><label class="label-inline" for="dev_mouse" >Mouse</label>&nbsp;
         <input type="checkbox" id="dev_keyboard" onclick="resetDev(); resetHistory();"
-        ><label class="label-inline" for="dev_keyboard">Keyboard</label>&nbsp; 
+        ><label class="label-inline" for="dev_keyboard">Keyboard</label>&nbsp;
         (<input type="checkbox" id="dev_moveless" onclick="resetDev(); resetHistory();"
         ><label class="label-inline" for="dev_moveless">moveless</label>)
         <textarea class=history id="event_history" rows="9"></textarea>
