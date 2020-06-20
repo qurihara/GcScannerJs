@@ -84,7 +84,8 @@ function scanDev(){
             //     tClient.send(tMsgStr);
 
             // do for obniz
-            send(tMsgStr);
+            // send(tMsgStr);
+            console.log(tMsgStr);
             obniz.display.clear();
             obniz.display.print(tMsgStr);
 
