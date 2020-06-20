@@ -85,6 +85,8 @@ function scanDev(){
 
             // do for obniz
             send(tMsgStr);
+            obniz.display.clear();
+            obniz.display.print(tMsgStr);
 
             // display log
             var tLog = `${++EVENT_HISTORY.count} (${e.dev}) : ${tMsgStr}\n`;
